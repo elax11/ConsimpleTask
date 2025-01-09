@@ -1,9 +1,8 @@
+using ConsimpleTask.EntityFramework;
 using ConsimpleTask.EntityFramework.Entities;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<ShopDbContext>(options =>
@@ -13,7 +12,12 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ShopDbContext>();
+    DbInitializer.Initialize(dbContext);
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
