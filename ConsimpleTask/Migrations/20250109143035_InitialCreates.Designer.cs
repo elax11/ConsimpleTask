@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ConsimpleTask.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20250109122959_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250109143035_InitialCreates")]
+    partial class InitialCreates
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

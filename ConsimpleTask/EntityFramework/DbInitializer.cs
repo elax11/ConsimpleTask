@@ -52,39 +52,53 @@ namespace ConsimpleTask.EntityFramework
 
             if (!context.Purchases.Any())
             {
-                var purchases = new List<Purchase>();
                 var random = new Random();
 
                 for (int i = 1; i <= 100; i++)
                 {
                     var customerId = random.Next(1, 51);
+
+                    var randomDays = random.Next(1, 31);
+                    var purchaseDate = DateTime.Now.AddDays(-randomDays);
+
                     var purchase = new Purchase
                     {
-                        Date = DateTime.Now,
+                        Date = purchaseDate,
                         TotalAmount = 0,
                         CustomerId = customerId,
-                        PurchaseItemsId = new List<int>() 
+                        PurchaseItemsId = new List<int>()
                     };
 
                     context.Purchases.Add(purchase);
                     context.SaveChanges();
+
+                    decimal totalAmount = 0;
 
                     for (int j = 0; j < random.Next(1, 5); j++)
                     {
                         var productId = random.Next(1, 101);
                         var quantity = random.Next(1, 10);
 
-                        var purchaseItem = new PurchaseItem
+                        var product = context.Products.FirstOrDefault(p => p.Id == productId);
+                        if (product != null)
                         {
-                            PurchaseId = purchase.Id, 
-                            ProductId = productId,
-                            Quantity = quantity
-                        };
+                            var purchaseItem = new PurchaseItem
+                            {
+                                PurchaseId = purchase.Id,
+                                ProductId = productId,
+                                Quantity = quantity
+                            };
 
-                        context.PurchaseItems.Add(purchaseItem);
-                        context.SaveChanges();
-                        purchase.PurchaseItemsId.Add(purchaseItem.Id); 
+                            context.PurchaseItems.Add(purchaseItem);
+                            context.SaveChanges();
+                            purchase.PurchaseItemsId.Add(purchaseItem.Id);
+
+                            totalAmount += product.Price * quantity;
+                        }
                     }
+
+                    purchase.TotalAmount = totalAmount;
+                    context.SaveChanges(); 
                 }
             }
 
